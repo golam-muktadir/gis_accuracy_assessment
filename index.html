@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIS Accuracy Assessment | Part 1 Fundamentals</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Flip card 3D perspective */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Header Section -->
+    <header class="bg-slate-900 text-white py-10 px-6 shadow-md">
+        <div class="max-w-5xl mx-auto text-center">
+            <span class="bg-emerald-600 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">GIS Course • Part 1</span>
+            <h1 class="text-3xl md:text-4xl font-bold mt-3">Geospatial Accuracy Assessment</h1>
+            <p class="text-slate-300 mt-2 max-w-2xl mx-auto text-sm md:text-base">
+                Master the fundamentals of sampling design, statistical validation, and reference data from a geospatial perspective. Click any card below to reveal core concepts!
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content Grid (Interactive Flip Cards) -->
+    <main class="max-w-5xl mx-auto px-6 py-12 flex-grow">
+        <h2 class="text-xl font-bold text-slate-900 mb-6 border-b pb-2 flex items-center gap-2">
+            <span class="text-emerald-600">📌</span> Interactive Study Cards
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <!-- Card 1: Why Accuracy Matters -->
+            <div class="h-72 cursor-pointer perspective-1000 group" onclick="this.querySelector('.transform-style-3d').classList.toggle('rotate-y-180')">
+                <div class="relative w-full h-full transform-style-3d rounded-xl shadow-md bg-white border border-slate-200">
+                    <!-- Front -->
+                    <div class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between bg-white rounded-xl">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded">Concept 01</span>
+                            <h3 class="text-lg font-bold text-slate-900 mt-4">Why Accuracy Assessment Matters</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">Every classified map contains errors from sensor noise, mixed pixels, and algorithms...</p>
+                        <div class="text-xs font-semibold text-emerald-600 flex items-center justify-end gap-1">Click to Flip ➔</div>
+                    </div>
+                    <!-- Back -->
+                    <div class="absolute inset-0 backface-hidden rotate-y-180 p-6 bg-slate-900 text-white rounded-xl flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400">The Paradigm Shift</span>
+                            <h3 class="text-base font-bold mt-2">From Eyeball Test to Rigorous Stats</h3>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            We move away from subjective visual checks to quantitative evaluation. Ground truth reference data provides map users with statistical confidence.
+                        </p>
+                        <span class="text-xs text-slate-400 text-right">Click to flip back</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Sampling Units & Size -->
+            <div class="h-72 cursor-pointer perspective-1000 group" onclick="this.querySelector('.transform-style-3d').classList.toggle('rotate-y-180')">
+                <div class="relative w-full h-full transform-style-3d rounded-xl shadow-md bg-white border border-slate-200">
+                    <!-- Front -->
+                    <div class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between bg-white rounded-xl">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded">Concept 02</span>
+                            <h3 class="text-lg font-bold text-slate-900 mt-4">Sampling Unit & Sample Size</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">How do we decide what to sample, and how many points are statistically enough?</p>
+                        <div class="text-xs font-semibold text-emerald-600 flex items-center justify-end gap-1">Click to Flip ➔</div>
+                    </div>
+                    <!-- Back -->
+                    <div class="absolute inset-0 backface-hidden rotate-y-180 p-6 bg-slate-900 text-white rounded-xl flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400">Rules of Thumb</span>
+                            <h3 class="text-base font-bold mt-2">Pixels vs. Clusters</h3>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            <strong>Unit:</strong> Single pixel (vulnerable to GPS mismatch) vs. Pixel clusters. <br>
+                            <strong>Size:</strong> Minimum guideline of ~50 sample points per map class (e.g., 5 classes = 250 min points).
+                        </p>
+                        <span class="text-xs text-slate-400 text-right">Click to flip back</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Simple Random Sampling -->
+            <div class="h-72 cursor-pointer perspective-1000 group" onclick="this.querySelector('.transform-style-3d').classList.toggle('rotate-y-180')">
+                <div class="relative w-full h-full transform-style-3d rounded-xl shadow-md bg-white border border-slate-200">
+                    <!-- Front -->
+                    <div class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between bg-white rounded-xl">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded">Concept 03</span>
+                            <h3 class="text-lg font-bold text-slate-900 mt-4">Simple Random Sampling (SRS)</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">Points are scattered entirely at random across the entire study area.</p>
+                        <div class="text-xs font-semibold text-emerald-600 flex items-center justify-end gap-1">Click to Flip ➔</div>
+                    </div>
+                    <!-- Back -->
+                    <div class="absolute inset-0 backface-hidden rotate-y-180 p-6 bg-slate-900 text-white rounded-xl flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400">Pros & Cons</span>
+                            <h3 class="text-base font-bold mt-2">The Rare Class Trap</h3>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            <strong>Pros:</strong> Statistically unbiased and simple to implement.<br>
+                            <strong>Cons:</strong> Highly inefficient for rare classes (e.g., wetlands or urban patches spanning <2% of area). Often captures zero points for them!
+                        </p>
+                        <span class="text-xs text-slate-400 text-right">Click to flip back</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Stratified Random Sampling -->
+            <div class="h-72 cursor-pointer perspective-1000 group" onclick="this.querySelector('.transform-style-3d').classList.toggle('rotate-y-180')">
+                <div class="relative w-full h-full transform-style-3d rounded-xl shadow-md bg-white border border-slate-200">
+                    <!-- Front -->
+                    <div class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between bg-white rounded-xl">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded">Concept 04</span>
+                            <h3 class="text-lg font-bold text-slate-900 mt-4">Stratified Random Sampling</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">The study area is divided into strata based on map classes before random points are drawn.</p>
+                        <div class="text-xs font-semibold text-emerald-600 flex items-center justify-end gap-1">Click to Flip ➔</div>
+                    </div>
+                    <!-- Back -->
+                    <div class="absolute inset-0 backface-hidden rotate-y-180 p-6 bg-slate-900 text-white rounded-xl flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400">The Gold Standard</span>
+                            <h3 class="text-base font-bold mt-2">Guaranteed Representation</h3>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Ensures rare or minority classes get adequate sample size representation. Requires post-stratification weighting when calculating overall map error matrices.
+                        </p>
+                        <span class="text-xs text-slate-400 text-right">Click to flip back</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5: Systematic & Cluster Sampling -->
+            <div class="h-72 cursor-pointer perspective-1000 group" onclick="this.querySelector('.transform-style-3d').classList.toggle('rotate-y-180')">
+                <div class="relative w-full h-full transform-style-3d rounded-xl shadow-md bg-white border border-slate-200">
+                    <!-- Front -->
+                    <div class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between bg-white rounded-xl">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded">Concept 05</span>
+                            <h3 class="text-lg font-bold text-slate-900 mt-4">Systematic & Cluster Sampling</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">Regular grid layouts or grouped pixel blocks used to optimize fieldwork.</p>
+                        <div class="text-xs font-semibold text-emerald-600 flex items-center justify-end gap-1">Click to Flip ➔</div>
+                    </div>
+                    <!-- Back -->
+                    <div class="absolute inset-0 backface-hidden rotate-y-180 p-6 bg-slate-900 text-white rounded-xl flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400">Trade-offs</span>
+                            <h3 class="text-base font-bold mt-2">Coverage vs. Autocorrelation</h3>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            <strong>Systematic:</strong> Great spatial coverage, but risks bias if landscape has cyclical patterns.<br>
+                            <strong>Cluster:</strong> Saves travel time in fieldwork, but high spatial autocorrelation violates i.i.d. assumptions.
+                        </p>
+                        <span class="text-xs text-slate-400 text-right">Click to flip back</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6: Interactive Class Exercise Preview -->
+            <div class="h-72 cursor-pointer perspective-1000 group" onclick="this.querySelector('.transform-style-3d').classList.toggle('rotate-y-180')">
+                <div class="relative w-full h-full transform-style-3d rounded-xl shadow-md bg-emerald-700 text-white border border-emerald-600">
+                    <!-- Front -->
+                    <div class="absolute inset-0 backface-hidden p-6 flex flex-col justify-between rounded-xl">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-200 bg-emerald-800 px-2.5 py-1 rounded">Activity</span>
+                            <h3 class="text-lg font-bold mt-4">The "Rare Class Challenge"</h3>
+                        </div>
+                        <p class="text-sm text-emerald-100">Non-GIS hands-on tabular exercise with tokens or spreadsheet datasets.</p>
+                        <div class="text-xs font-semibold text-emerald-200 flex items-center justify-end gap-1">View Activity ➔</div>
+                    </div>
+                    <!-- Back -->
+                    <div class="absolute inset-0 backface-hidden rotate-y-180 p-6 bg-slate-900 text-white rounded-xl flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400">Classroom Task</span>
+                            <h3 class="text-base font-bold mt-2">How SRS Fails</h3>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Students draw 10 items from a pool of 80 forests, 15 urban, and 5 water tokens. They observe how simple random sampling misses the rare water class completely, proving why stratification is necessary!
+                        </p>
+                        <span class="text-xs text-slate-400 text-right">Click to flip back</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+        <p>GIS Accuracy Assessment Course Material • Built for interactive student learning.</p>
+    </footer>
+
+</body>
+</html>
