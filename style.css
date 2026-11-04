@@ -1,4 +1,4 @@
-/* 3D Flip Card Enhancements */
+* { font-family: 'Inter', sans-serif; }
 .card-perspective { perspective: 1000px; }
 .card-inner {
     position: relative;
@@ -18,3 +18,25 @@
     box-sizing: border-box;
 }
 .card-back { transform: rotateY(180deg); }
+
+.cell {
+    width: 40px; height: 40px;
+    border: 1.5px solid #1f2937;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600; color: transparent;
+    transition: all 0.15s ease;
+}
+.cell.sampled {
+    border: 3px solid #fbbf24;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+    position: relative;
+}
+.cell.sampled::after {
+    content: '✓'; color: white; font-size: 16px; font-weight: bold;
+}
+.forest { background-color: #059669; }
+.water { background-color: #2563eb; }
+.urban { background-color: #dc2626; }
+.agriculture { background-color: #ca8a04; }
+.grassland { background-color: #65a30d; }
