@@ -61,44 +61,99 @@ const samplingData = {
 };
 
 // --- RENDERER 1: Pixel Grid Simulation ---
+// --- PAGE 2: Interactive Pixel Grid Simulation Module ---
+
 function renderPixelGridSimulator(container) {
     container.innerHTML += `
-        <div class="space-y-6 mt-4">
-            <p class="text-slate-700 text-base">Select a sampling strategy below to visualize how sample points are distributed over a simulated landscape grid (Green = Forest, Blue = Water, Red = Urban, Yellow = Agriculture).</p>
+        <div class="space-y-6 mt-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
             
-            <div class="flex flex-wrap gap-3">
-                <button onclick="runPixelSim('random')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm shadow">Run Simple Random</button>
-                <button onclick="runPixelSim('stratified')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm shadow">Run Stratified Random</button>
-                <button onclick="runPixelSim('systematic')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm shadow">Run Systematic Grid</button>
+            <!-- Instructions Header -->
+            <div class="bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-xl">
+                <h4 class="font-bold text-blue-900 text-base mb-1">📖 How to Use This Simulation:</h4>
+                <ol class="list-decimal list-inside text-sm text-blue-800 space-y-1">
+                    <li><strong>Choose a Strategy:</strong> Select between Simple Random, Stratified Random, or Systematic Grid sampling using the buttons below.</li>
+                    <li><strong>Analyze the Distribution:</strong> Observe how sample points (marked with <span class="font-bold text-yellow-600">✓</span>) land across different land cover classes (Forest, Water, Urban, Agriculture).</li>
+                    <li><strong>Compare Representation:</strong> Note how random sampling might miss smaller classes, whereas stratified sampling guarantees balanced representation!</li>
+                </ol>
             </div>
 
+            <!-- Controls Panel -->
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Strategy 1</span>
+                    <button onclick="runPixelSim('random')" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow transition">
+                        🎲 Simple Random
+                    </button>
+                    <p class="text-xs text-slate-500 mt-2">Equal chance for any pixel across the board.</p>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Strategy 2</span>
+                    <button onclick="runPixelSim('stratified')" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow transition">
+                        📐 Stratified Random
+                    </button>
+                    <p class="text-xs text-slate-500 mt-2">Guarantees proportional samples per class.</p>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Strategy 3</span>
+                    <button onclick="runPixelSim('systematic')" class="w-full mt-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow transition">
+                        📏 Systematic Grid
+                    </button>
+                    <p class="text-xs text-slate-500 mt-2">Uniform spatial spacing across the grid.</p>
+                </div>
+            </div>
+
+            <!-- Legend Bar -->
+            <div class="flex flex-wrap items-center justify-center gap-4 py-2 bg-slate-100 rounded-xl text-xs font-semibold text-slate-700">
+                <span class="flex items-center gap-1.5"><div class="w-3.5 h-3.5 bg-emerald-600 rounded"></div> Forest</span>
+                <span class="flex items-center gap-1.5"><div class="w-3.5 h-3.5 bg-blue-600 rounded"></div> Water</span>
+                <span class="flex items-center gap-1.5"><div class="w-3.5 h-3.5 bg-red-600 rounded"></div> Urban</span>
+                <span class="flex items-center gap-1.5"><div class="w-3.5 h-3.5 bg-yellow-500 rounded"></div> Agriculture</span>
+                <span class="flex items-center gap-1.5"><div class="w-3.5 h-3.5 border-2 border-yellow-500 bg-slate-900 rounded"></div> Sampled Pixel (✓)</span>
+            </div>
+
+            <!-- Landscape Grid Canvas -->
             <div class="flex justify-center bg-slate-900 p-6 rounded-2xl shadow-inner">
                 <div id="pixel-grid-canvas-container" class="grid grid-cols-12 gap-1 bg-slate-950 p-4 rounded-xl border border-slate-700"></div>
             </div>
-            
-            <div id="pixel-sim-stats" class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-slate-700 font-medium text-sm">
-                Click a strategy above to generate sample points on the landscape grid.
+
+            <!-- Real-time Feedback & Breakdown Stats -->
+            <div id="pixel-sim-stats" class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-slate-800 text-sm font-medium">
+                👉 Click any of the three sampling buttons above to begin the simulation.
             </div>
         </div>
     `;
-    setTimeout(initPixelGrid, 50);
+    
+    // Initialize grid layout upon rendering
+    setTimeout(initPixelGridDataset, 50);
 }
 
-let simulatedGridData = [];
-let activeSamplePoints = new Set();
+// Global data states for the grid simulation
+let landscapeGridData = [];
+let sampledPixelKeys = new Set();
 
-function initPixelGrid() {
-    simulatedGridData = [];
+function initPixelGridDataset() {
+    landscapeGridData = [];
+    sampledPixelKeys.clear();
     const gridEl = document.getElementById('pixel-grid-canvas-container');
     if (!gridEl) return;
     gridEl.innerHTML = '';
 
     const landTypes = ['forest', 'water', 'urban', 'agri'];
+    
+    // Generate a 12x12 simulated population grid
     for (let r = 0; r < 12; r++) {
-        simulatedGridData[r] = [];
+        landscapeGridData[r] = [];
         for (let c = 0; c < 12; c++) {
-            let type = landTypes[Math.floor(Math.random() * landTypes.length)];
-            simulatedGridData[r][c] = type;
+            // Create clustered realistic patterns
+            let type;
+            if (r < 4 && c < 4) type = 'forest';
+            else if (r > 8 && c > 8) type = 'urban';
+            else if (r === 5 || c === 5) type = 'water';
+            else type = landTypes[Math.floor(Math.random() * landTypes.length)];
+
+            landscapeGridData[r][c] = type;
             
             const cell = document.createElement('div');
             cell.id = `px-${r}-${c}`;
@@ -108,52 +163,106 @@ function initPixelGrid() {
                 type === 'urban' ? 'bg-red-600 text-white' : 'bg-yellow-500 text-slate-900'
             }`;
             cell.textContent = "";
+            
+            // Allow manual clicking to toggle individual pixels
+            cell.onclick = () => {
+                const key = `${r}-${c}`;
+                if (sampledPixelKeys.has(key)) {
+                    sampledPixelKeys.delete(key);
+                    cell.style.border = "none";
+                    cell.innerHTML = "";
+                } else {
+                    sampledPixelKeys.add(key);
+                    cell.style.border = "3px solid #fbbf24";
+                    cell.innerHTML = "✓";
+                }
+                updatePixelStatsText("Manual Custom Sampling");
+            };
+            
             gridEl.appendChild(cell);
         }
     }
 }
 
 function runPixelSim(strategy) {
-    activeSamplePoints.clear();
-    initPixelGrid();
+    sampledPixelKeys.clear();
+    initPixelGridDataset(); // Reset cell visuals
+
+    let descriptionText = "";
 
     if (strategy === 'random') {
-        while(activeSamplePoints.size < 15) {
+        // Simple Random: Drop 16 random points across the 144 pixels
+        while (sampledPixelKeys.size < 16) {
             let r = Math.floor(Math.random() * 12);
             let c = Math.floor(Math.random() * 12);
-            activeSamplePoints.add(`${r}-${c}`);
+            sampledPixelKeys.add(`${r}-${c}`);
         }
-        document.getElementById('pixel-sim-stats').innerHTML = `<strong>Simple Random Sampling:</strong> 15 points dropped completely at random. Notice how some clusters or land classes may have fewer samples.`;
+        descriptionText = `<strong>🎲 Simple Random Sampling (n=16):</strong> Points are scattered totally at random across the landscape. Notice how some land classes receive many samples while others might be underrepresented due to random chance.`;
+    
     } else if (strategy === 'stratified') {
-        ['forest', 'water', 'urban', 'agri'].forEach(type => {
+        // Stratified Random: Force equal samples per land type
+        const types = ['forest', 'water', 'urban', 'agri'];
+        types.forEach(type => {
             let matches = [];
             for (let r = 0; r < 12; r++) {
                 for (let c = 0; c < 12; c++) {
-                    if (simulatedGridData[r][c] === type) matches.push(`${r}-${c}`);
+                    if (landscapeGridData[r][c] === type) matches.push(`${r}-${c}`);
                 }
             }
+            // Shuffle matches
             matches.sort(() => Math.random() - 0.5);
+            // Take up to 4 samples per stratum
             for (let i = 0; i < Math.min(4, matches.length); i++) {
-                activeSamplePoints.add(matches[i]);
+                sampledPixelKeys.add(matches[i]);
             }
         });
-        document.getElementById('pixel-sim-stats').innerHTML = `<strong>Stratified Random Sampling:</strong> Equal representation forced across all land cover strata, ensuring minority classes are sampled adequately.`;
+        descriptionText = `<strong>📐 Stratified Random Sampling:</strong> The landscape was divided into strata by land cover class. Equal samples were forced into every class group, preventing rare categories from being missed.`;
+    
     } else if (strategy === 'systematic') {
+        // Systematic Grid: Every 3rd row and column
         for (let r = 1; r < 12; r += 3) {
             for (let c = 1; c < 12; c += 3) {
-                activeSamplePoints.add(`${r}-${c}`);
+                sampledPixelKeys.add(`${r}-${c}`);
             }
         }
-        document.getElementById('pixel-sim-stats').innerHTML = `<strong>Systematic Grid Sampling:</strong> Points placed at regular uniform spatial intervals across the landscape.`;
+        descriptionText = `<strong>📏 Systematic Grid Sampling:</strong> Points are laid out in a strict geometric grid pattern at regular spatial intervals across the entire map region.`;
     }
 
-    activeSamplePoints.forEach(key => {
+    // Apply visual checkmarks to selected sample points
+    sampledPixelKeys.forEach(key => {
         let cell = document.getElementById(`px-${key}`);
         if (cell) {
             cell.style.border = "3px solid #fbbf24";
             cell.innerHTML = "✓";
         }
     });
+
+    updatePixelStatsText(descriptionText);
+}
+
+function updatePixelStatsText(strategyTitle) {
+    const statsEl = document.getElementById('pixel-sim-stats');
+    if (!statsEl) return;
+
+    let counts = { forest: 0, water: 0, urban: 0, agri: 0 };
+    sampledPixelKeys.forEach(key => {
+        let [r, c] = key.split('-').map(Number);
+        let t = landscapeGridData[r][c];
+        if (counts[t] !== undefined) counts[t]++;
+    });
+
+    statsEl.innerHTML = `
+        <div class="space-y-2">
+            <p>${strategyTitle}</p>
+            <div class="flex flex-wrap gap-4 text-xs font-bold pt-2 border-t border-slate-200">
+                <span class="text-slate-600">Total Samples (n): <span class="text-slate-900">${sampledPixelKeys.size}</span></span>
+                <span class="text-emerald-700">Forest Samples: ${counts.forest}</span>
+                <span class="text-blue-700">Water Samples: ${counts.water}</span>
+                <span class="text-red-700">Urban Samples: ${counts.urban}</span>
+                <span class="text-yellow-700">Agri Samples: ${counts.agri}</span>
+            </div>
+        </div>
+    `;
 }
 
 
