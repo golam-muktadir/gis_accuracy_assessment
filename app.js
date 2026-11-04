@@ -7,6 +7,7 @@ const courseModules = [
     ...processData.modules,
     ...samplingData.modules,
     ...calculationData.modules,
+    ...assessmentData.modules,
     ...reflectionData.modules
 ];
 
@@ -134,6 +135,8 @@ function renderModule(index) {
             renderClassificationSimulator(container);
         } else if (sec.type === "drag-match") {
             renderDragMatch(container);
+        } else if (sec.type === "advanced-error-worksheet") {
+            renderAdvancedErrorWorksheet(container);
         } else if (sec.type === "final-section") {
             renderFinalSection(container);
         }
